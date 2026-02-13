@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Does this beat Round 1?</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="layout" id="layout">
+    <div class="app">
+      <!-- Title -->
+      <h1>Does this beat Round 1?</h1>
+
+      <!-- Streak display -->
+      <div id="streak-display">
+        Streak: 0<br>
+        Highest Streak: 0 (0.00s)
+      </div>
+
+      <!-- Timer (fixed height, won't push content) -->
+      <div id="timer-display">0.00s</div>
+
+      <!-- Score -->
+      <div id="status" class="status"></div>
+
+      <!-- Cards container -->
+      <div class="container" id="container"></div>
+
+      <!-- Yes/No buttons -->
+      <div class="buttons">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+      </div>
+
+      <!-- Settings toggle -->
+      <button id="toggle-controls">Settings</button>
+    </div>
+
+    <!-- Settings panel -->
+    <div class="controls hidden" id="controls"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
