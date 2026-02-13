@@ -147,11 +147,12 @@ function updateStreakAmbientSounds(){
    PATTERNS & SCORES
 ========================= */
 const PATTERNS = [
-  { id: "straight_flush", name: "straight_flush", label: "Straight Flush", weight: 1, gen: straightFlush },
-  { id: "four_kind", name: "four_kind", label: "Four of a Kind", weight: 1, gen: fourOfAKind },
-  { id: "full_house", name: "full_house", label: "Full House", weight: 20, gen: fullHouse },
-  { id: "flush",      name: "flush",      label: "Flush",      weight: 40, gen: flush },
-  { id: "straight",   name: "straight",   label: "Straight",   weight: 20, gen: straight }
+  { id: "straight_flush", name: "straight_flush", label: "Straight Flush", weight: 2, gen: straightFlush },
+  { id: "four_kind", name: "four_kind", label: "Four of a Kind", weight: 3, gen: fourOfAKind },
+  { id: "full_house", name: "full_house", label: "Full House", weight: 40, gen: fullHouse },
+  { id: "flush",      name: "flush",      label: "Flush",      weight: 80, gen: flush },
+  { id: "straight",   name: "straight",   label: "Straight",   weight: 40, gen: straight },
+  { id: "high_card",   name: "high_card",   label: "High Card",   weight: 5, gen: highCard }
 ];
 
 const HAND_SCORES = {
@@ -159,7 +160,8 @@ const HAND_SCORES = {
   four_kind:      { chips: 60,  mult: 7 },
   full_house:     { chips: 40,  mult: 4 },
   flush:          { chips: 35,  mult: 4 },
-  straight:       { chips: 30,  mult: 4 }
+  straight:       { chips: 30,  mult: 4 },
+  high_card:      { chips: 5,   mult: 1 }
 };
 
 /* =========================
@@ -312,6 +314,36 @@ function straight() {
   return rows.map((row, i) => ({ col: startCol + i, row }));
 }
 
+function highCard() {
+  while (true) {
+    // pick 5 distinct columns (distinct ranks)
+    const cols = shuffle([...Array(SHEET_2_COLS).keys()]).slice(0, 5);
+
+    const sorted = [...cols].sort((a, b) => a - b);
+
+    // check straight (consecutive columns)
+    const isConsec = sorted.every(
+      (v, i, arr) => i === 0 || v === arr[i - 1] + 1
+    );
+
+    // wheel straight (A-2-3-4-5 equivalent)
+    const isWheel =
+      sorted.toString() === [0, 1, 2, 3, 12].toString();
+
+    if (isConsec || isWheel) continue;
+
+    // assign random rows (suits)
+    const rows = cols.map(() => randInt(0, SHEET_2_ROWS - 1));
+
+    // avoid flush (all same row)
+    const allSameRow = rows.every(r => r === rows[0]);
+    if (allSameRow) continue;
+
+    return cols.map((col, i) => ({ col, row: rows[i] }));
+  }
+}
+
+
 function randomCell(cols, rows) { return {col: randInt(0,cols-1), row: randInt(0,rows-1)}; }
 
 /* =========================
@@ -324,17 +356,39 @@ function cardChips(col){
   return rank;
 }
 
-function calculateScore(pattern,cards){
+function calculateScore(pattern, cards){
   const base = HAND_SCORES[pattern.name];
   let chips = base.chips;
-  if(pattern.name==="four_kind"){
+
+  if(pattern.name === "four_kind"){
     const counts = {};
-    for(const c of cards) counts[c.col] = (counts[c.col]||0)+1;
-    const quadCol = Number(Object.keys(counts).find(c=>counts[c]===4));
-    for(const c of cards) if(c.col===quadCol) chips+=cardChips(c.col);
-  } else { for(const c of cards) chips+=cardChips(c.col); }
-  return chips*base.mult;
+    for(const c of cards)
+      counts[c.col] = (counts[c.col] || 0) + 1;
+
+    const quadCol = Number(
+      Object.keys(counts).find(c => counts[c] === 4)
+    );
+
+    for(const c of cards)
+      if(c.col === quadCol)
+        chips += cardChips(c.col);
+
+  } 
+  else if(pattern.name === "high_card"){
+    // find highest ranked column
+    const highestCol = Math.max(...cards.map(c => c.col));
+
+    chips += cardChips(highestCol);
+
+  } 
+  else {
+    for(const c of cards)
+      chips += cardChips(c.col);
+  }
+
+  return chips * base.mult;
 }
+
 
 /* =========================
    RENDERING
