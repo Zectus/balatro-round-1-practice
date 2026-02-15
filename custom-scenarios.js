@@ -1386,7 +1386,7 @@ function getAllWeights() {
 }
 
 //debugging
-async function autoBalanceTo50(iterations = 20000, tolerance = 0.05, maxSteps = 20, onUpdate) {
+async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10, onUpdate) {
   const originalSpawnRate = joker_spawn_rate;
   const originalMaxJokers = MAX_JOKERS;
 
@@ -1447,7 +1447,7 @@ async function autoBalanceTo50(iterations = 20000, tolerance = 0.05, maxSteps = 
 
     let low = 1;
     let high = 200;
-    let mid = 5;
+    let mid = 15;
     let winRate = 1;
 
     for (let step = 0; step < maxSteps; step++) {
@@ -2360,5 +2360,6 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
     playButtonSound();
   });
 });
+
 
 
