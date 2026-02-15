@@ -277,7 +277,7 @@
       }
     ]
   },
-  "maxJokers": 10,
+  "maxJokers": 5,
   "jokerSpawnRate": 0.7,
   "scoringRequirement": "multiplier",
   "multipliers": {
