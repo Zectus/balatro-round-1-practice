@@ -1869,7 +1869,7 @@ function renderScoringInputs() {
     fineTuneBtn.textContent = "Fine Tuning...";
     fineTuneBtn.disabled = true; // prevent multiple clicks
 
-    await autoBalanceTo50(20000, 0.05, 20, async (maxJ, mult) => {
+    await autoBalanceTo50(500, 0.07, 10, async (maxJ, mult) => {
       const input = baseScoringSection.querySelector(`input[data-joker='${maxJ}']`);
       if (input) {
         input.value = mult.toFixed(6);
@@ -2360,6 +2360,7 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
     playButtonSound();
   });
 });
+
 
 
 
