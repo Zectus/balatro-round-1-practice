@@ -2181,7 +2181,7 @@ if (managePresetsSection) {
           applyPresetData(fetchedData);
         } catch (err) {
           console.error(`Failed to load preset ${name}:`, err);
-          playCancelSound(); // optional: play cancel if it fails
+          playFailSound();
         }
       }
     };
@@ -2360,4 +2360,5 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
     playButtonSound();
   });
 });
+
 
