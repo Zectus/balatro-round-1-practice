@@ -2290,7 +2290,7 @@ if (managePresetsSection) {
         applyPresetData(data);
       } else {
         try {
-          const response = await fetch(`/presets/${name}.json`);
+          const response = await fetch(`presets/${name}.json`);
           const fetchedData = await response.json();
           applyPresetData(fetchedData);
         } catch (err) {
@@ -2474,4 +2474,5 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
     playButtonSound();
   });
 });
+
 
