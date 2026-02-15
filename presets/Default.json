@@ -1,0 +1,297 @@
+{
+  "handWeights": [
+    {
+      "label": "Flush Five",
+      "weight": 10
+    },
+    {
+      "label": "Flush House",
+      "weight": 10
+    },
+    {
+      "label": "Five of a Kind",
+      "weight": 10
+    },
+    {
+      "label": "Straight Flush",
+      "weight": 6
+    },
+    {
+      "label": "Four of a Kind",
+      "weight": 6
+    },
+    {
+      "label": "Full House",
+      "weight": 40
+    },
+    {
+      "label": "Flush",
+      "weight": 80
+    },
+    {
+      "label": "Straight",
+      "weight": 40
+    },
+    {
+      "label": "Three of a Kind",
+      "weight": 3
+    },
+    {
+      "label": "Two Pair",
+      "weight": 3
+    },
+    {
+      "label": "Pair",
+      "weight": 5
+    },
+    {
+      "label": "High Card",
+      "weight": 4
+    }
+  ],
+  "enhancerWeights": [
+    {
+      "type": "none",
+      "weight": 60
+    },
+    {
+      "type": "bonus",
+      "weight": 20
+    },
+    {
+      "type": "mult",
+      "weight": 15
+    },
+    {
+      "type": "glass",
+      "weight": 5
+    }
+  ],
+  "sealWeights": [
+    {
+      "type": null,
+      "weight": 8
+    },
+    {
+      "type": "red_seal",
+      "weight": 2
+    }
+  ],
+  "jokerWeights": {
+    "onScoring": [
+      {
+        "name": "greedy_joker",
+        "weight": 1
+      },
+      {
+        "name": "lusty_joker",
+        "weight": 1
+      },
+      {
+        "name": "wrathful_joker",
+        "weight": 1
+      },
+      {
+        "name": "gluttonous_joker",
+        "weight": 1
+      },
+      {
+        "name": "even_steven",
+        "weight": 1
+      },
+      {
+        "name": "odd_todd",
+        "weight": 1
+      },
+      {
+        "name": "walkie_talkie",
+        "weight": 1
+      },
+      {
+        "name": "scholar",
+        "weight": 1
+      },
+      {
+        "name": "smiley_face",
+        "weight": 1
+      },
+      {
+        "name": "photograph",
+        "weight": 1
+      },
+      {
+        "name": "fibonacci",
+        "weight": 1
+      },
+      {
+        "name": "arrowhead",
+        "weight": 1
+      },
+      {
+        "name": "onys_agate",
+        "weight": 1
+      },
+      {
+        "name": "triboulet",
+        "weight": 1
+      }
+    ],
+    "afterScoring": [
+      {
+        "name": "joker",
+        "weight": 1
+      },
+      {
+        "name": "jolly",
+        "weight": 1
+      },
+      {
+        "name": "zanny",
+        "weight": 1
+      },
+      {
+        "name": "mad",
+        "weight": 1
+      },
+      {
+        "name": "crazy",
+        "weight": 1
+      },
+      {
+        "name": "droll",
+        "weight": 1
+      },
+      {
+        "name": "sly",
+        "weight": 1
+      },
+      {
+        "name": "willy",
+        "weight": 1
+      },
+      {
+        "name": "clever",
+        "weight": 1
+      },
+      {
+        "name": "devious",
+        "weight": 1
+      },
+      {
+        "name": "crafty",
+        "weight": 1
+      },
+      {
+        "name": "abstract",
+        "weight": 1
+      },
+      {
+        "name": "gros_michel",
+        "weight": 1
+      },
+      {
+        "name": "cavendish",
+        "weight": 1
+      },
+      {
+        "name": "seeing_double",
+        "weight": 1
+      },
+      {
+        "name": "mr_bones",
+        "weight": 1
+      },
+      {
+        "name": "stencil",
+        "weight": 1
+      },
+      {
+        "name": "flower_pot",
+        "weight": 1
+      },
+      {
+        "name": "duo",
+        "weight": 1
+      },
+      {
+        "name": "trio",
+        "weight": 1
+      },
+      {
+        "name": "family",
+        "weight": 1
+      },
+      {
+        "name": "order",
+        "weight": 1
+      },
+      {
+        "name": "tribe",
+        "weight": 1
+      },
+      {
+        "name": "stuntman",
+        "weight": 1
+      }
+    ],
+    "retrigger": [
+      {
+        "name": "sock_and_buskin",
+        "weight": 1
+      },
+      {
+        "name": "hack",
+        "weight": 1
+      },
+      {
+        "name": "hanging_chad",
+        "weight": 1
+      },
+      {
+        "name": "seltzer",
+        "weight": 1
+      }
+    ],
+    "copy": [
+      {
+        "name": "blueprint",
+        "weight": 1
+      },
+      {
+        "name": "brainstorm",
+        "weight": 1
+      }
+    ],
+    "recognition": [
+      {
+        "name": "splash",
+        "weight": 1
+      },
+      {
+        "name": "smeared_joker",
+        "weight": 1
+      },
+      {
+        "name": "pareidolia",
+        "weight": 1
+      }
+    ]
+  },
+  "maxJokers": 10,
+  "jokerSpawnRate": 0.7,
+  "scoringRequirement": "multiplier",
+  "multipliers": {
+    "0": 2.5902,
+    "1": 3.8963,
+    "2": 5.6829,
+    "3": 7.8771,
+    "4": 11.5118,
+    "5": 15.8726,
+    "6": 22.9161,
+    "7": 31.7081,
+    "8": 39.8186,
+    "9": 58.7168,
+    "10": 75.4157
+  },
+  "fixedScore": 300
+}
