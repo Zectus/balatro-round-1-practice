@@ -389,8 +389,17 @@ function generateJokers() {
   return jokers;
 }
 
-
 function getClosestRequirement(score) {
+  const n = ALL_REQUIREMENTS.length;
+
+  // Handle infinity / naneinf
+  if (!isFinite(score)) {
+    if (n >= 2) {
+      // pick either second-to-last or last
+      return Math.random() < 0.5 ? ALL_REQUIREMENTS[n - 4] : ALL_REQUIREMENTS[n - 1];
+    }
+    return ALL_REQUIREMENTS[n - 1]; // fallback
+  }
 
   const below = ALL_REQUIREMENTS.filter(v => v <= score);
   const above = ALL_REQUIREMENTS.filter(v => v >= score);
@@ -417,6 +426,7 @@ function getClosestRequirement(score) {
 
   return ALL_REQUIREMENTS[0];
 }
+
 
 function setGuessButtonsEnabled(enabled) {
   document.getElementById("yes").disabled = !enabled;
@@ -1539,9 +1549,8 @@ function getAllWeights() {
 }
 
 //debugging
-async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10, onUpdate) {
+async function autoBalanceTo50(iterations = 200, tolerance = 0.05, maxSteps = 10, onUpdate) {
   const originalSpawnRate = joker_spawn_rate;
-
   joker_spawn_rate = 1;
   console.log(getEnhancerWeights());
   const results = [];
@@ -1550,19 +1559,16 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
     let corrects = 0;
 
     for (let i = 0; i < iterations; i++) {
-
-      // --- Pick pattern using current live weights ---
       const patternWeights = getPatternWeights();
       const pattern = pickPattern(patternWeights);
       let tops = pattern.gen();
-      
+
       tops.sort((a, b) =>
         a.col !== b.col
           ? b.col - a.col
           : ROW_PRIORITY.indexOf(a.row) - ROW_PRIORITY.indexOf(b.row)
       );
 
-      // --- Assign cards with live enhancers ---
       const enhancerWeights = getEnhancerWeights();
       const sealWeights = getSealWeights();
       const cards = tops.map(card => ({
@@ -1571,11 +1577,8 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
         seal: randomSeal(sealWeights)
       }));
 
-      // --- Generate jokers with live weights ---
       const jokerWeights = getJokerWeights();
       const generatedJokers = generateJokers(jokerWeights);
-
-      // 🔹 Limit joker count locally instead of mutating MAX_JOKERS
       const jokers = generatedJokers.slice(0, maxJokersLimit);
 
       const score = calculateScore(pattern, cards, jokers);
@@ -1597,16 +1600,16 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
     ? parseInt(window.maxJokersInput.value)
     : 5;
 
-  for (let max = 0; max <= dynamicMaxJokers; max++) {
+  let previousMultiplier = 1;
 
-    let low = 1;
+  for (let max = 0; max <= dynamicMaxJokers; max++) {
+    let low = max > 0 ? results[max - 1].multiplier : 1;
     let high = 200;
     let mid;
     let winRate;
 
-    // --- Step 1: Expand upper bound if needed ---
+    // --- Step 1: Expand high if needed (preserve original expansion logic) ---
     winRate = simulateWinRate(high, max);
-
     let expansionSteps = 0;
     const MAX_EXPANSIONS = 50;
 
@@ -1617,9 +1620,8 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
       expansionSteps++;
     }
 
-    // --- Step 2: Binary search within valid bracket ---
+    // --- Step 2: Binary search ---
     for (let step = 0; step < maxSteps; step++) {
-
       mid = (low + high) / 2;
       winRate = simulateWinRate(mid, max);
 
@@ -1633,9 +1635,10 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
     }
 
     results.push({ maxJokers: max, multiplier: mid, winRate });
+    previousMultiplier = mid;
 
     console.log(
-      `MAX_JOKERS=${max} | MULT≈${mid.toFixed(4)} | WinRate=${(winRate*100).toFixed(2)}%`
+      `MAX_JOKERS=${max} | MULT≈${mid.toFixed(4)} | WinRate=${(winRate * 100).toFixed(2)}%`
     );
 
     if (onUpdate) {
@@ -1644,8 +1647,6 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
         input.value = mid.toFixed(6);
         MULTIPLIERS[max] = mid;
         window[`MULT_${max}`] = mid;
-        console.log(`Updated MULT_${max} -> ${mid}`);
-
         input.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
@@ -1654,11 +1655,11 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
     await new Promise(resolve => setTimeout(resolve, 80));
   }
 
-  // restore original globals
   joker_spawn_rate = originalSpawnRate;
-
   return results;
 }
+
+
 
 
 
