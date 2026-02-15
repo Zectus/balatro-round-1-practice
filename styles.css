@@ -40,7 +40,7 @@ body {
   gap: 40px;
   width: 100%;
   max-width: 900px;
-  padding-top: 60px;
+  padding-top: 20px;
   padding-bottom: 0px;
   box-sizing: border-box;
 }
@@ -262,6 +262,7 @@ button:active {
   font-size: 50px;
   color: #ff2a2a;
   font-weight: 800;
+  margin: -5px 0 -25px;
 }
 
 #joker-slot {
