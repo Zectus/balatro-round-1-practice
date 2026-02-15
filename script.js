@@ -55,7 +55,10 @@ const streakDisplay = document.getElementById("streak-display");
 document
   .getElementById("custom-scenarios-btn")
   .addEventListener("click", () => {
-    window.location.href = "custom-scenarios.html";
+    playButtonSound(); // start playing sound
+    setTimeout(() => {
+      window.location.href = "custom-scenarios.html";
+    }, 50); // small delay, adjust as needed
   });
 
 /* =========================
