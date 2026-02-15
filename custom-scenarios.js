@@ -466,6 +466,7 @@ function straightFlush() {
   return cols.map(col => ({ col, row }));
 }
 
+
 function fourOfAKind() {
   const col = randInt(0, SHEET_2_COLS - 1);
   const rows = shuffle([...Array(SHEET_2_ROWS).keys()]);
@@ -488,6 +489,8 @@ function fullHouse() {
     ...rowsB.map(row => ({ col: pairCol, row }))
   ];
 }
+
+
 function flush() {
 
   let validCols;
@@ -515,6 +518,7 @@ function flush() {
   const row = randInt(0, SHEET_2_ROWS - 1);
   return validCols.map(col => ({ col, row }));
 }
+
 
 function straight() {
 
@@ -1086,6 +1090,9 @@ function generateRoundScenario() {
   };
 }
 
+function getAnswerType(round) {
+  return round.score >= round.targetScore ? "higher" : "lower";
+}
 
 
 
@@ -1099,12 +1106,55 @@ function buildRoundQueue() {
     roundQueue.push(generateRoundScenario());
   }
 
-  // Randomize first (ensures tie randomness later)
   roundQueue = shuffle(roundQueue);
 
-  // Stable sort ascending by targetScore
   roundQueue.sort((a, b) => a.targetScore - b.targetScore);
+
+  enforceMaxStreak(roundQueue, 4); // max streak length = 4
 }
+function enforceMaxStreak(queue, maxStreak) {
+
+  let streakType = null;
+  let streakStart = 0;
+
+  for (let i = 0; i < queue.length; i++) {
+
+    const currentType = getAnswerType(queue[i]);
+
+    if (currentType !== streakType) {
+      streakType = currentType;
+      streakStart = i;
+      continue;
+    }
+
+    const streakLength = i - streakStart + 1;
+
+    if (streakLength > maxStreak) {
+
+      // Find nearest opposite-type round ahead
+      let swapIndex = -1;
+
+      for (let j = i + 1; j < queue.length; j++) {
+        if (getAnswerType(queue[j]) !== streakType) {
+          swapIndex = j;
+          break;
+        }
+      }
+
+      if (swapIndex === -1) return; // no opposite found
+
+      // Swap
+      const temp = queue[i];
+      queue[i] = queue[swapIndex];
+      queue[swapIndex] = temp;
+
+      // Reset streak tracking
+      streakType = getAnswerType(queue[i]);
+      streakStart = i;
+    }
+  }
+}
+
 
 function reroll() {
 
@@ -1440,16 +1490,16 @@ function getAllWeights() {
 //debugging
 async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10, onUpdate) {
   const originalSpawnRate = joker_spawn_rate;
-  const originalMaxJokers = MAX_JOKERS;
 
   joker_spawn_rate = 1;
   console.log(getEnhancerWeights());
   const results = [];
 
-  function simulateWinRate(candidateMultiplier) {
+  function simulateWinRate(candidateMultiplier, maxJokersLimit) {
     let corrects = 0;
 
     for (let i = 0; i < iterations; i++) {
+
       // --- Pick pattern using current live weights ---
       const patternWeights = getPatternWeights();
       const pattern = pickPattern(patternWeights);
@@ -1472,7 +1522,10 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
 
       // --- Generate jokers with live weights ---
       const jokerWeights = getJokerWeights();
-      const jokers = generateJokers(jokerWeights);
+      const generatedJokers = generateJokers(jokerWeights);
+
+      // 🔹 Limit joker count locally instead of mutating MAX_JOKERS
+      const jokers = generatedJokers.slice(0, maxJokersLimit);
 
       const score = calculateScore(pattern, cards, jokers);
       const baseOnlyScore = calculateBase(pattern, cards);
@@ -1489,22 +1542,35 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
     return corrects / iterations;
   }
 
-  // --- use dynamic MAX_JOKERS from the input if it exists ---
   const dynamicMaxJokers = window.maxJokersInput
     ? parseInt(window.maxJokersInput.value)
     : 5;
 
   for (let max = 0; max <= dynamicMaxJokers; max++) {
-    MAX_JOKERS = max;
 
     let low = 1;
     let high = 200;
-    let mid = 15;
-    let winRate = 1;
+    let mid;
+    let winRate;
 
+    // --- Step 1: Expand upper bound if needed ---
+    winRate = simulateWinRate(high, max);
+
+    let expansionSteps = 0;
+    const MAX_EXPANSIONS = 50;
+
+    while (winRate > 0.5 && expansionSteps < MAX_EXPANSIONS) {
+      low = high;
+      high *= 2;
+      winRate = simulateWinRate(high, max);
+      expansionSteps++;
+    }
+
+    // --- Step 2: Binary search within valid bracket ---
     for (let step = 0; step < maxSteps; step++) {
+
       mid = (low + high) / 2;
-      winRate = simulateWinRate(mid);
+      winRate = simulateWinRate(mid, max);
 
       if (Math.abs(winRate - 0.5) <= tolerance) break;
 
@@ -1529,20 +1595,16 @@ async function autoBalanceTo50(iterations = 500, tolerance = 0.07, maxSteps = 10
         window[`MULT_${max}`] = mid;
         console.log(`Updated MULT_${max} -> ${mid}`);
 
-        // Trigger input event
         input.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
 
-    // --- play the sound and wait a short moment to avoid overlap ---
     await playRandomCorrectSound();
-    await new Promise(resolve => setTimeout(resolve, 80)); // 80ms breathing room
+    await new Promise(resolve => setTimeout(resolve, 80));
   }
-
 
   // restore original globals
   joker_spawn_rate = originalSpawnRate;
-  MAX_JOKERS = originalMaxJokers;
 
   return results;
 }
@@ -1921,7 +1983,7 @@ function renderScoringInputs() {
     fineTuneBtn.textContent = "Fine Tuning...";
     fineTuneBtn.disabled = true; // prevent multiple clicks
 
-    await autoBalanceTo50(500, 0.07, 10, async (maxJ, mult) => {
+    await autoBalanceTo50(20000, 0.05, 20, async (maxJ, mult) => {
       const input = baseScoringSection.querySelector(`input[data-joker='${maxJ}']`);
       if (input) {
         input.value = mult.toFixed(6);
@@ -2228,12 +2290,12 @@ if (managePresetsSection) {
         applyPresetData(data);
       } else {
         try {
-          const response = await fetch(`presets/${name}.json`);
+          const response = await fetch(`/presets/${name}.json`);
           const fetchedData = await response.json();
           applyPresetData(fetchedData);
         } catch (err) {
           console.error(`Failed to load preset ${name}:`, err);
-          playFailSound();
+          playFailSound(); // optional: play cancel if it fails
         }
       }
     };
@@ -2412,9 +2474,4 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
     playButtonSound();
   });
 });
-
-
-
-
-
 
