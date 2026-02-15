@@ -1109,8 +1109,11 @@ function buildRoundQueue() {
   roundQueue = shuffle(roundQueue);
 
   roundQueue.sort((a, b) => a.targetScore - b.targetScore);
-
+  const jokerTileW = jokerSheet.width / JOKER_COLS;
+  const jokerTileH = jokerSheet.height / JOKER_ROWS;
   enforceMaxStreak(roundQueue, 4); // max streak length = 4
+  updateJokerCapacityBox(jokerTileW, jokerTileH);
+  updateJokerCount(currentJokers.length);
 }
 function enforceMaxStreak(queue, maxStreak) {
 
@@ -1291,6 +1294,8 @@ function reroll() {
 
 
 
+
+  updateJokerCount(currentJokers.length);
   roundStartTime = performance.now();
 }
 
@@ -2044,6 +2049,7 @@ if (window.maxJokersInput) {
         MAX_JOKERS = parseInt(e.target.value) || 0;
         console.log("MAX_JOKERS changed ->", MAX_JOKERS);
         renderScoringInputs();
+
     };
 } else {
     console.warn("maxJokersInput not found, dynamic update disabled");
@@ -2149,7 +2155,7 @@ if (managePresetsSection) {
   exportContainer.appendChild(nameLabel);
   exportContainer.appendChild(nameInput);
 
-  // --- Save Preset Button ---
+  // --- Save Preset   updateJokerBox(currentJokers.length, smallJokerSheet.width / JOKER_COLS, smallJokerSheet.height / JOKER_ROWS);tton ---
   const saveBtn = document.createElement("button");
   saveBtn.textContent = "Save Preset";
   saveBtn.className = "set-all-btn";
@@ -2290,7 +2296,7 @@ if (managePresetsSection) {
         applyPresetData(data);
       } else {
         try {
-          const response = await fetch(`presets/${name}.json`);
+          const response = await fetch(`/presets/${name}.json`);
           const fetchedData = await response.json();
           applyPresetData(fetchedData);
         } catch (err) {
@@ -2475,4 +2481,72 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
   });
 });
 
+const jokerSlot = document.getElementById("joker-slot");
+
+// Style joker-slot as the grey box (ONLY visual properties)
+jokerSlot.style.background = "#3a3a3a";
+jokerSlot.style.borderRadius = "14px";
+jokerSlot.style.padding = "10px";
+jokerSlot.style.display = "flex";
+jokerSlot.style.justifyContent = "center";
+jokerSlot.style.alignItems = "center";
+jokerSlot.style.gap = "8px";
+jokerSlot.style.boxSizing = "border-box";
+
+// Create counter attached to body (never affects layout)
+const jokerCounter = document.createElement("div");
+jokerCounter.style.position = "absolute";
+jokerCounter.style.fontSize = "30px";     // slightly bigger
+jokerCounter.style.fontWeight = "700";   // semi-bold (cleaner than 700)
+jokerCounter.style.letterSpacing = "0.5px";
+jokerCounter.style.color = "white";
+jokerCounter.style.pointerEvents = "none";
+jokerCounter.style.zIndex = "9999";
+
+document.body.appendChild(jokerCounter);
+
+function updateJokerCount(currentCount) {
+
+  const maxPart = jokerCounter.textContent.split("/")[1];
+  jokerCounter.textContent = `${currentCount}/${maxPart}`;
+
+  const rect = jokerSlot.getBoundingClientRect();
+
+  const scrollX = window.scrollX || window.pageXOffset;
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  jokerCounter.style.left = `${rect.left + scrollX}px`;
+  jokerCounter.style.top = `${rect.bottom + scrollY + 2}px`;
+}
+
+
+function updateJokerCapacityBox(jokerTileW, jokerTileH) {
+
+  if (MAX_JOKERS === 0) {
+    jokerSlot.style.visibility = "hidden";
+    jokerCounter.style.visibility = "hidden";
+    return;
+  }
+
+  // Explicitly restore visibility
+  jokerSlot.style.visibility = "visible";
+  jokerCounter.style.visibility = "visible";
+
+  const gap = 8;
+  const paddingX = 20;
+  const paddingY = 20;
+
+  const width =
+    (jokerTileW * MAX_JOKERS) +
+    (gap * (MAX_JOKERS - 1)) +
+    paddingX;
+
+  const height =
+    jokerTileH + paddingY;
+
+  jokerSlot.style.width = `${width}px`;
+  jokerSlot.style.height = `${height}px`;
+
+  jokerCounter.textContent = `0/${MAX_JOKERS}`;
+}
 
