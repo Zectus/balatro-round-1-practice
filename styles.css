@@ -3,16 +3,19 @@
 ========================= */
 html, body {
   margin: 0;
-  height: 100%;
+  padding: 0;
+  min-height: 100%;
 }
 
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at top, #2a2a2a, #0d0d0d);
   font-family: system-ui, sans-serif;
   font-size: 22px;
+
+  background-color: #0d0d0d; /* solid fallback */
+  background-image: radial-gradient(circle at top center, #2a2a2a 0%, #0d0d0d 60%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
 }
 
 /* =========================
@@ -23,6 +26,23 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  box-sizing: border-box;
+}
+
+.appcustomscenarios {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  padding-top: 60px;
+  padding-bottom: 0px;
+  box-sizing: border-box;
 }
 
 .app h1 {
@@ -156,7 +176,7 @@ button:active {
 ========================= */
 .status {
   height: 40px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   font-size: 24px;
   font-weight: 700;
   color: #ffd966;
@@ -191,3 +211,465 @@ button:active {
   text-align: left;
   font-size: 1.75rem;
 }
+
+/* =========================
+   Custom Scenarios - Run Score
+========================= */
+
+#run-display {
+  position: absolute;
+  left: 40px;
+  top: 180px;
+  color: #ffd966;
+  font-weight: 700;
+  text-align: left;
+  font-size: 1.75rem;
+}
+#round-display {
+  position: absolute;
+  left: 40px;
+  top: 220px;
+  color: #ffd966;
+  font-weight: 700;
+  text-align: left;
+  font-size: 1.75rem;
+}
+#highest-display {
+  position: absolute;
+  left: 40px;
+  top: 260px;
+  color: #ffd966;
+  font-weight: 700;
+  text-align: left;
+  font-size: 1.75rem;
+}
+
+/* =========================
+   Custom Scenario Target
+========================= */
+
+#round-target {
+  text-align: center;
+}
+
+#target-label {
+  font-size: 30px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+#target-score {
+  font-size: 50px;
+  color: #ff2a2a;
+  font-weight: 800;
+}
+
+#joker-slot {
+  height: 120px; /* fixed height to prevent layout shift */
+  display: flex;
+  justify-content: center; /* horizontal centering */
+  align-items: center;
+  gap: 12px; /* spacing between jokers */
+}
+
+
+#customize-panel {
+  width: 1200px;
+  max-width: 95vw;
+
+  height: 3200px;
+  margin: 40px auto 0 auto;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+  display: none;
+}
+
+
+
+
+
+
+.layoutscenarios {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.customize-section {
+  margin: 24px 40px;
+}
+
+.section-header {
+  padding: 20px 24px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: #ffffff;         /* ensure header inherits white */
+}
+
+.section-header:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.section-title {
+  font-size: 22px;        /* match body size */
+  font-weight: 1000;       /* thicker like rest of site */
+  color: #ffffff;         /* pure white */
+  letter-spacing: 0.4px;
+}
+
+
+/* Chevron Arrow (custom drawn) */
+.chevron {
+  width: 10px;
+  height: 10px;
+
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+
+  transform: rotate(-45deg);
+  transition: transform 0.25s ease;
+}
+
+/* Content */
+.section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+
+  margin-top: 10px;
+  padding: 0 24px;
+
+  border-left: 2px solid rgba(255,255,255,0.15);
+}
+
+.weight-group {
+  margin: 30px 0;
+  padding: 20px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.weight-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.weight-group h3 {
+  margin: 0;
+  font-size: 22px;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.weight-reset {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.15s ease;
+}
+
+.weight-reset:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.weight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px 24px;
+}
+
+.weight-item {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  align-items: center;
+  font-size: 18px;
+}
+
+.weight-item input {
+  width: 70px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  outline: none;
+  transition: 0.15s ease;
+}
+
+.weight-item input:focus {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15);
+}
+
+.joker-group {
+  margin: 30px 0;
+  padding: 20px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.joker-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 18px;
+}
+.joker-slots-section {
+  display: flex;
+  justify-content: center; /* center the whole group horizontally */
+  gap: 60px; /* space between Joker Slots and Joker Spawn Rate */
+  margin-bottom: 18px;
+  color: white;
+}
+
+.joker-slots-section .slot-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers label above input */
+}
+
+.joker-slots-section label {
+  margin-bottom: 4px;
+  text-align: center; /* ensure label text is centered above input */
+}
+
+.joker-slots-section input {
+  width: 60px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  text-align: center;
+}
+
+
+
+
+.joker-group h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.joker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 22px 16px;
+}
+
+.joker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* fixed visible area */
+.joker-sprite-box {
+  width: 53.25px;
+  height: 71.25px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* center the makeLayer output properly */
+.joker-sprite-box > * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.75);
+  transform-origin: center;
+}
+
+
+
+.joker-item input {
+  width: 60px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  text-align: center;
+}
+
+.joker-sprite {
+  transform: scale(0.6);
+  transform-origin: center;
+}
+
+
+.scoring-mult-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* center the whole input group */
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.scoring-mult-section .mult-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center label above input */
+}
+
+.scoring-mult-section label {
+  margin-bottom: 4px;
+  text-align: center;
+  color: white;
+}
+
+.scoring-mult-section input {
+  width: 50px;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  text-align: center;
+}
+
+.set-all-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  cursor: pointer;
+}
+
+.hard-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08); /* translucent panel */
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.hard-mode-toggle label {
+  color: white;
+  font-size: 28px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.hard-mode-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.fixed-scoring-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.fixed-scoring-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.fixed-scoring-toggle label {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.fixed-scoring-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.fixed-scoring-toggle input[type="number"] {
+  width: 70px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  text-align: center;
+}
+
+.preset-tiles-container {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.preset-tile {
+  position: relative;
+  width: 120px;
+  height: 80px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+}
+
+.preset-tile .preset-load-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  cursor: pointer;
+}
+

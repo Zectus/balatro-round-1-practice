@@ -6,6 +6,12 @@
 const SHEET_1_SRC = "textures/Enhancers.png"; // 7x5 (background)
 const SHEET_2_SRC = "textures/8BitDeck_opt2.png"; // 13x4 (cards)
 
+
+const JOKER_COLS = 10;
+const JOKER_ROWS = 16;
+
+let currentJoker = null;
+
 const SHEET_1_COLS = 7;
 const SHEET_1_ROWS = 5;
 const SHEET_2_COLS = 13;
@@ -46,6 +52,11 @@ let lastQualityTimerMode = null;
 // "timed" = timer > 0
 
 const streakDisplay = document.getElementById("streak-display");
+document
+  .getElementById("custom-scenarios-btn")
+  .addEventListener("click", () => {
+    window.location.href = "custom-scenarios.html";
+  });
 
 /* =========================
    AUDIO
@@ -796,3 +807,5 @@ toggleBtn.onclick = () => {
 
 
 layout.classList.add("centered");
+customizePanel.style.display = "block";
+customizePanel.style.marginTop = "40px";

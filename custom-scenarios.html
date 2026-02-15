@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Custom Scenarios</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="layoutscenarios" id="layoutscenarios">
+    <div class="appcustomscenarios">
+      <!-- Title -->
+      <!-- Run Score display -->
+      <div id="run-display">
+        Run Score: 0
+      </div>
+      <div id="round-display">Round: 1/20</div>
+      <div id="highest-display">Highest Score: 0</div>
+
+      <!-- Status -->
+      <div id="joker-slot"></div>
+      
+      <div id="round-target">
+        <div id="target-label">Score at least</div>
+        <div id="target-score">0</div>
+      </div>
+      <div id="status" class="status"></div>
+      <!-- Scenario text container -->
+      <div class="container" id="scenario-container">
+        <!-- Modifier text will be injected here -->
+      </div>
+
+      <!-- Yes/No buttons -->
+      <div class="buttons">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
+      </div>
+
+      <!-- Back button -->
+      <div>
+        <button id="customize-btn">Customize</button>
+      </div>
+
+
+    </div>
+
+    <!-- No settings panel in this mode -->
+  </div>
+  <div id="customize-panel">
+
+    <!-- Manage Presets Section -->
+    <div class="customize-section">
+      <div class="section-header">Manage Presets <span class="chevron"></span></div>
+      <div class="section-content" id="manage-presets-content"></div>
+    </div>
+
+
+    <!-- Jokers Section -->
+    <div class="customize-section">
+      <div class="section-header">Jokers <span class="chevron"></span></div>
+      <div class="section-content" id="jokers-section-content"></div>
+    </div>
+
+    <!-- Hand Section -->
+    <div class="customize-section">
+      <div class="section-header">Hand <span class="chevron"></span></div>
+      <div class="section-content" id="hand-section-content"></div>
+    </div>
+
+    <!-- Scoring Requirement Section -->
+    <div class="customize-section">
+      <div class="section-header">Scoring Requirement <span class="chevron"></span></div>
+      <div class="section-content" id="scoring-panel"></div>
+    </div>
+
+  </div>
+
+
+  <script src="custom-scenarios.js"></script>
+</body>
+</html>
