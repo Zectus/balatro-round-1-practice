@@ -446,9 +446,24 @@ function pickPattern() {
    PATTERN GENERATORS
 ========================= */
 function straightFlush() {
+
+  const straightPatterns = [
+    [12, 0, 1, 2, 3],
+    [0, 1, 2, 3, 4],
+    [1, 2, 3, 4, 5],
+    [2, 3, 4, 5, 6],
+    [3, 4, 5, 6, 7],
+    [4, 5, 6, 7, 8],
+    [5, 6, 7, 8, 9],
+    [6, 7, 8, 9, 10],
+    [7, 8, 9, 10, 11],
+    [8, 9, 10, 11, 12]
+  ];
+
+  const cols = straightPatterns[randInt(0, straightPatterns.length - 1)];
   const row = randInt(0, SHEET_2_ROWS - 1);
-  const startCol = randInt(0, SHEET_2_COLS - 5);
-  return Array.from({ length: 5 }, (_, i) => ({ col: startCol + i, row }));
+
+  return cols.map(col => ({ col, row }));
 }
 
 function fourOfAKind() {
@@ -473,20 +488,57 @@ function fullHouse() {
     ...rowsB.map(row => ({ col: pairCol, row }))
   ];
 }
-
 function flush() {
-  const cols = shuffle([...Array(13).keys()]).slice(0, 5);
-  const row = randInt(0, 3);
-  return cols.map(col => ({ col, row }));
+
+  let validCols;
+
+  while (true) {
+    const cols = shuffle([...Array(SHEET_2_COLS).keys()]).slice(0, 5);
+    cols.sort((a, b) => a - b);
+
+    const isStandardStraight = isConsecutive(cols);
+
+    const isWheel =
+      cols.length === 5 &&
+      cols.includes(12) &&
+      cols.includes(0) &&
+      cols.includes(1) &&
+      cols.includes(2) &&
+      cols.includes(3);
+
+    if (!isStandardStraight && !isWheel) {
+      validCols = cols;
+      break;
+    }
+  }
+
+  const row = randInt(0, SHEET_2_ROWS - 1);
+  return validCols.map(col => ({ col, row }));
 }
 
 function straight() {
-  const startCol = randInt(0, 8);
+
+  const straightPatterns = [
+    [12, 0, 1, 2, 3], // A-2-3-4-5 (wheel) why does chatgpt code like this omg
+    [0, 1, 2, 3, 4],
+    [1, 2, 3, 4, 5],
+    [2, 3, 4, 5, 6],
+    [3, 4, 5, 6, 7],
+    [4, 5, 6, 7, 8],
+    [5, 6, 7, 8, 9],
+    [6, 7, 8, 9, 10],
+    [7, 8, 9, 10, 11],
+    [8, 9, 10, 11, 12]
+  ];
+
+  const cols = straightPatterns[randInt(0, straightPatterns.length - 1)];
+
   let rows;
   do {
-    rows = Array.from({ length: 5 }, () => randInt(0, 3));
+    rows = cols.map(() => randInt(0, SHEET_2_ROWS - 1));
   } while (rows.every(r => r === rows[0]));
-  return rows.map((row, i) => ({ col: startCol + i, row }));
+
+  return cols.map((col, i) => ({ col, row: rows[i] }));
 }
 
 function highCard() {
@@ -2360,6 +2412,7 @@ document.querySelectorAll(".weight-reset, .fine-tune-btn, .set-all-btn, .preset-
     playButtonSound();
   });
 });
+
 
 
 
