@@ -156,9 +156,32 @@ const ROUND_BASES = [
   7200000,
   300000000,
   47000000000,
-  2900000000000,
-  77000000000000000,
-  860000000000000000000
+  2.9e13,
+  7.7e16,
+  8.6e20,
+  4.2e25,
+  9.2e30,
+  9.2e36,
+  4.3e43,
+  9.7e50,
+  1.0e59,
+  5.8e67,
+  1.6e77,
+  2.4e87,
+  1.9e98,
+  8.4e109,
+  2.0e122,
+  2.7e135,
+  2.1e149,
+  9.9e163,
+  2.7e179,
+  4.4e195,
+  4.4e212,
+  2.8e230,
+  1.1e249,
+  2.7e268,
+  4.5e288,
+  4.8e309 //naneinf
 ];
 const ALL_REQUIREMENTS = [];
 
@@ -167,7 +190,11 @@ for (const base of ROUND_BASES) {
   ALL_REQUIREMENTS.push(Math.floor(base * 1.5));
   ALL_REQUIREMENTS.push(base * 2);
 }
-
+function formatLargeNumber(value) {
+  if (!isFinite(value)) return "naneinf"; // handle Infinity
+  if (value >= 1e11) return value.toExponential(2).replace("e+", "e");
+  return Math.floor(value).toLocaleString();
+}
 // Sort ascending for easier comparison
 ALL_REQUIREMENTS.sort((a, b) => a - b);
 
@@ -175,8 +202,9 @@ let currentTargetScore = 0;
 
 function updateTargetDisplay() {
   document.getElementById("target-score").textContent =
-    currentTargetScore.toLocaleString();
+    formatLargeNumber(currentTargetScore);
 }
+
 
 /* =========================
    AUDIO
@@ -1313,8 +1341,15 @@ function resolveGuess(guessYes) {
   const hasMrBones = currentJokers.some(j => j.name === "mr_bones");
   const effectiveScoreForBeats = hasMrBones ? currentScore * 4 : currentScore;
 
-  const beats = effectiveScoreForBeats >= currentTargetScore;
+  let beats;
+  if (!isFinite(effectiveScoreForBeats) && !isFinite(currentTargetScore)) {
+    beats = false; // both infinite, force false
+  } else {
+    beats = effectiveScoreForBeats >= currentTargetScore;
+  }
+
   const correct = guessYes === beats;
+
 
   const timeTakenMs = performance.now() - roundStartTime;
   const timeTakenSec = timeTakenMs / 1000;
@@ -1352,8 +1387,9 @@ function resolveGuess(guessYes) {
       // Stop ambient layers immediately
       stopAllAmbientLayers();
 
-      // Show win text
       status.textContent = `Congratulations! Final Score: ${Math.floor(runScore)}`;
+
+
 
       // Play win sound
       const winAudio = new Audio("sounds/win.ogg");
@@ -1402,7 +1438,17 @@ function resolveGuess(guessYes) {
     buildRoundQueue();
   }
 
-  let scoreText = `Score: ${Math.floor(currentScore)}`;
+  let scoreText;
+
+  if (!isFinite(currentScore)) {
+    scoreText = `Score: naneinf`;
+  } else if (currentScore >= 1e11) {
+    scoreText = `Score: ${currentScore.toExponential(2).replace("e+", "e")}`;
+  } else {
+    scoreText = `Score: ${Math.floor(currentScore).toLocaleString()}`;
+  }
+
+
   if (hasMrBones && currentScore < currentTargetScore && beats) {
     scoreText += " (Saved by Mr. Bones!)";
   }
@@ -1655,7 +1701,7 @@ function smoothScrollTo(targetY, duration = 600) {
 }
 
 customizeBtn.addEventListener("click", () => {
-
+  playButtonSound();
   customizePanel.style.display = "block";
 
   const panelTop = customizePanel.getBoundingClientRect().top + window.scrollY;
@@ -2290,8 +2336,12 @@ if (managePresetsSection) {
     loadBtn.style.padding = "6px 12px"; // scale padding
 
     loadBtn.onclick = async () => {
-      playButtonSound(); // <-- make sure this plays the button sound
+      playButtonSound(); // play the button sound
       highestScore = 0;
+
+      // update the name input to this preset's name
+      if (nameInput) nameInput.value = name;
+
       if (data) {
         applyPresetData(data);
       } else {
@@ -2305,6 +2355,7 @@ if (managePresetsSection) {
         }
       }
     };
+
 
     tile.appendChild(loadBtn);
 
@@ -2551,3 +2602,7 @@ function updateJokerCapacityBox(jokerTileW, jokerTileH) {
 }
 
 
+window.addEventListener("load", () => {
+
+  updateJokerCount(currentJokers.length);
+});
