@@ -1549,7 +1549,7 @@ function getAllWeights() {
 }
 
 //debugging
-async function autoBalanceTo50(iterations = 200, tolerance = 0.05, maxSteps = 10, onUpdate) {
+async function autoBalanceTo50(iterations = 200, tolerance = 0.03, maxSteps = 12, onUpdate) {
   const originalSpawnRate = joker_spawn_rate;
   joker_spawn_rate = 1;
   console.log(getEnhancerWeights());
@@ -1600,19 +1600,19 @@ async function autoBalanceTo50(iterations = 200, tolerance = 0.05, maxSteps = 10
     ? parseInt(window.maxJokersInput.value)
     : 5;
 
-  let previousMultiplier = 1;
 
   for (let max = 0; max <= dynamicMaxJokers; max++) {
     let low = max > 0 ? results[max - 1].multiplier : 1;
-    let high = 200;
+    let high = max > 0 ? results[max - 1].multiplier * 2 : 200; // previousMultiplier*2 if possible
     let mid;
     let winRate;
 
-    // --- Step 1: Expand high if needed (preserve original expansion logic) ---
+    // Initialize winRate for expansion
     winRate = simulateWinRate(high, max);
+
+    // Step 1: Expand high if needed
     let expansionSteps = 0;
     const MAX_EXPANSIONS = 50;
-
     while (winRate > 0.5 && expansionSteps < MAX_EXPANSIONS) {
       low = high;
       high *= 2;
@@ -1658,11 +1658,6 @@ async function autoBalanceTo50(iterations = 200, tolerance = 0.05, maxSteps = 10
   joker_spawn_rate = originalSpawnRate;
   return results;
 }
-
-
-
-
-
 
 const customizeBtn = document.getElementById("customize-btn");
 const customizePanel = document.getElementById("customize-panel");
@@ -2607,3 +2602,4 @@ window.addEventListener("load", () => {
 
   updateJokerCount(currentJokers.length);
 });
+
