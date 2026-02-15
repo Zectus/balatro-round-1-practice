@@ -2296,7 +2296,7 @@ if (managePresetsSection) {
         applyPresetData(data);
       } else {
         try {
-          const response = await fetch(`/presets/${name}.json`);
+          const response = await fetch(`presets/${name}.json`);
           const fetchedData = await response.json();
           applyPresetData(fetchedData);
         } catch (err) {
@@ -2549,4 +2549,5 @@ function updateJokerCapacityBox(jokerTileW, jokerTileH) {
 
   jokerCounter.textContent = `0/${MAX_JOKERS}`;
 }
+
 
