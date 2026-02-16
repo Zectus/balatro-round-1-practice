@@ -1548,7 +1548,6 @@ function getAllWeights() {
   };
 }
 
-//debugging
 async function autoBalanceTo50(iterations = 200, tolerance = 0.03, maxSteps = 12, onUpdate) {
   const originalSpawnRate = joker_spawn_rate;
   joker_spawn_rate = 1;
@@ -1658,6 +1657,8 @@ async function autoBalanceTo50(iterations = 200, tolerance = 0.03, maxSteps = 12
   joker_spawn_rate = originalSpawnRate;
   return results;
 }
+
+
 
 const customizeBtn = document.getElementById("customize-btn");
 const customizePanel = document.getElementById("customize-panel");
@@ -2399,7 +2400,6 @@ if (managePresetsSection) {
       });
     }
 
-
     // Joker weights
     if (data.jokerWeights) {
       const sections = [
@@ -2455,12 +2455,8 @@ if (managePresetsSection) {
         fixedCheckbox.checked = true;
         fixedValueInput.style.display = "inline-block";
       }
-      if (typeof data.fixedScore === "number") {
-        FixedScoringValue = data.fixedScore;
-        if (fixedValueInput) fixedValueInput.value = FixedScoringValue;
-      }
     } else {
-      // multiplier
+      // multiplier mode
       HardMode = false;
       if (hardModeCheckbox) hardModeCheckbox.checked = false;
       FixedScoringEnabled = false;
@@ -2468,23 +2464,37 @@ if (managePresetsSection) {
         fixedCheckbox.checked = false;
         fixedValueInput.style.display = "none";
       }
-      if (data.multipliers) {
-        Object.keys(data.multipliers).forEach(k => {
-          const val = data.multipliers[k];
-          MULTIPLIERS[k] = val;
-          window[`MULT_${k}`] = val;
-          const input = baseScoringSection.querySelector(`input[data-joker='${k}']`);
-          if (input) input.value = val;
-        });
-      }
+    }
+
+    // 🔹 Always apply multipliers regardless of mode
+    if (data.multipliers) {
+      Object.keys(data.multipliers).forEach(k => {
+        const val = data.multipliers[k];
+        MULTIPLIERS[k] = val;
+        window[`MULT_${k}`] = val;
+        const input = baseScoringSection.querySelector(`input[data-joker='${k}']`);
+        if (input) input.value = val;
+      });
+    }
+
+    // 🔹 Always apply fixed score regardless of mode
+    if (typeof data.fixedScore === "number") {
+      FixedScoringValue = data.fixedScore;
+      if (fixedValueInput) fixedValueInput.value = FixedScoringValue;
     }
 
     console.log("Preset applied successfully:", data);
   }
 
 
-  // --- Gather preset data ---
   function gatherPresetData() {
+    const maxJ = window.maxJokersInput ? parseInt(window.maxJokersInput.value) : 5;
+
+    const allMultipliers = {};
+    for (let j = 0; j <= maxJ; j++) {
+      allMultipliers[j] = MULTIPLIERS[j] ?? 1; // default 1 if not set
+    }
+
     return {
       handWeights: PATTERNS.map(p => ({ label: p.label, weight: p.weight })),
       enhancerWeights: ENHANCERS.map(e => ({ type: e.type, weight: e.weight })),
@@ -2503,12 +2513,11 @@ if (managePresetsSection) {
         : FixedScoringEnabled
         ? "fixed"
         : "multiplier",
-      multipliers: Object.fromEntries(
-        Object.keys(MULTIPLIERS).map(k => [k, MULTIPLIERS[k]])
-      ),
-      fixedScore: FixedScoringValue
+      multipliers: allMultipliers,        // now always includes all
+      fixedScore: FixedScoringValue       // always included
     };
   }
+
 }
 
 
@@ -2602,4 +2611,3 @@ window.addEventListener("load", () => {
 
   updateJokerCount(currentJokers.length);
 });
-
